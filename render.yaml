@@ -28,6 +28,12 @@ services:
         value: https://nexus-platform.vercel.app
       - key: PORT
         value: "8000"
+      - key: DJANGO_SUPERUSER_USERNAME
+        value: nexus_admin
+      - key: DJANGO_SUPERUSER_EMAIL
+        value: admin@nexus-platform.io
+      - key: DJANGO_SUPERUSER_PASSWORD
+        generateValue: true
     healthCheckPath: /api/health/
     autoDeploy: true
 
