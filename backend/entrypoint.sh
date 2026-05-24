@@ -10,7 +10,7 @@ python manage.py migrate --noinput
 echo "==> Collecting static files..."
 python manage.py collectstatic --noinput
 
-echo "==> Creating superuser if not exists..."
+echo "==> Creating/updating superuser..."
 python manage.py shell -c "
 from django.contrib.auth import get_user_model
 import os
@@ -18,9 +18,17 @@ User = get_user_model()
 username = os.environ.get('DJANGO_SUPERUSER_USERNAME', 'nexus_admin')
 email    = os.environ.get('DJANGO_SUPERUSER_EMAIL',    'admin@nexus-platform.io')
 password = os.environ.get('DJANGO_SUPERUSER_PASSWORD', 'N3xus@Admin2026!')
-if not User.objects.filter(username=username).exists():
+reset    = os.environ.get('RESET_ADMIN_PASSWORD', 'false').lower() == 'true'
+user = User.objects.filter(username=username).first()
+if not user:
     User.objects.create_superuser(username=username, email=email, password=password)
     print(f'Superuser [{username}] created.')
+elif reset:
+    user.set_password(password)
+    user.is_staff = True
+    user.is_superuser = True
+    user.save()
+    print(f'Superuser [{username}] password reset.')
 else:
     print(f'Superuser [{username}] already exists.')
 "

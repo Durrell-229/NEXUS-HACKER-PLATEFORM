@@ -90,22 +90,22 @@ export default function AppLayout() {
 
       {/* Main content */}
       <main
-        className="relative z-10 min-h-screen pt-[60px] transition-all duration-300"
+        className="relative z-10 pt-[60px] transition-all duration-300"
         style={{
           marginLeft: 0,
+          minHeight: 'calc(100dvh - 60px)',
         }}
       >
         {/* Desktop margin via CSS class */}
-        <div className="lg-sidebar-margin h-full" style={{ '--desktop-margin': sidebarCollapsed ? '64px' : '260px' }}>
+        <div className="lg-sidebar-margin" style={{ '--desktop-margin': sidebarCollapsed ? '64px' : '260px' }}>
           <Suspense fallback={<PageLoader />}>
-            <AnimatePresence mode="wait">
+            <AnimatePresence>
               <motion.div
                 key={location.pathname}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -4 }}
-                transition={{ duration: 0.2, ease: 'easeOut' }}
-                className="h-full"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.15 }}
               >
                 <Outlet />
               </motion.div>

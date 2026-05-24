@@ -241,6 +241,7 @@ export default function Forge() {
   const [fullscreen, setFullscreen] = useState(false)
   const [activeTab, setActiveTab] = useState('terminal')
   const [notes, setNotes] = useState('')
+  const [mobilePanelOpen, setMobilePanelOpen] = useState(false)
   const termKeyRef = useRef(0)
 
   // Timer
@@ -263,7 +264,7 @@ export default function Forge() {
   return (
     <div
       className="flex flex-col"
-      style={{ height: 'calc(100vh - 60px)', background: '#02050c', overflow: 'hidden' }}
+      style={{ height: 'calc(100dvh - 60px)', background: '#02050c', overflow: 'hidden' }}
     >
       {/* ── Top bar ── */}
       <div
@@ -281,6 +282,19 @@ export default function Forge() {
               NEXUS FORGE
             </span>
           </div>
+          {/* Mobile: toggle machine list */}
+          <button
+            onClick={() => setMobilePanelOpen(v => !v)}
+            className="lg:hidden flex items-center gap-1.5 px-2 py-1 rounded font-mono text-[10px] font-bold"
+            style={{
+              background: mobilePanelOpen ? 'rgba(0,255,204,0.1)' : 'rgba(255,255,255,0.04)',
+              border: `1px solid ${mobilePanelOpen ? 'rgba(0,255,204,0.4)' : 'rgba(255,255,255,0.1)'}`,
+              color: mobilePanelOpen ? '#00ffcc' : '#666688',
+            }}
+          >
+            <Monitor size={10} />
+            MACHINES
+          </button>
           {selectedMachine && (
             <>
               <ChevronRight size={12} className="text-gray-700" />
@@ -334,14 +348,27 @@ export default function Forge() {
       {/* ── Body ── */}
       <div className="flex flex-1 overflow-hidden">
 
-        {/* Left: machine list + detail */}
+        {/* Left: machine list + detail — desktop: inline, mobile: slide-over */}
         {!fullscreen && (
+          <>
+            {/* Mobile backdrop */}
+            {mobilePanelOpen && (
+              <div
+                className="lg:hidden fixed inset-0 z-20 bg-black/60"
+                onClick={() => setMobilePanelOpen(false)}
+              />
+            )}
           <div
-            className="flex flex-col flex-shrink-0 overflow-hidden"
+            className={`flex flex-col flex-shrink-0 overflow-hidden
+              lg:relative lg:translate-x-0 lg:z-auto
+              fixed top-[104px] left-0 z-30 transition-transform duration-300
+              ${mobilePanelOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+            `}
             style={{
               width: '260px',
               borderRight: '1px solid rgba(255,255,255,0.05)',
-              background: 'rgba(0,0,0,0.25)',
+              background: '#02050c',
+              height: 'calc(100dvh - 104px)',
             }}
           >
             {/* Machine list */}
@@ -356,7 +383,7 @@ export default function Forge() {
                     key={m.id}
                     machine={m}
                     selected={selectedMachine}
-                    onSelect={setSelectedMachine}
+                    onSelect={(m) => { setSelectedMachine(m); setMobilePanelOpen(false) }}
                   />
                 ))}
               </div>
@@ -367,6 +394,7 @@ export default function Forge() {
               <MachineDetail machine={selectedMachine} onConnect={setSelectedMachine} />
             </div>
           </div>
+          </>
         )}
 
         {/* Right: terminal / notes */}

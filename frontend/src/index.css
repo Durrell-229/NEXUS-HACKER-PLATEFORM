@@ -305,10 +305,9 @@ a, button, [role='button'] { touch-action: manipulation; }
     background: rgba(26, 35, 50, 0.97);
   }
 
-  /* Minimum touch target 44px */
-  button, a, [role='button'], input[type='submit'] {
+  /* Minimum touch target 44px — only on standalone interactive elements */
+  nav a, .touch-target {
     min-height: 44px;
-    min-width: 44px;
   }
 
   /* Fix text too small on Android */
