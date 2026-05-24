@@ -14,8 +14,6 @@
       ]
     }
   ],
-  "env": {
-    "VITE_API_URL": "@nexus_api_url",
-    "VITE_WS_URL": "@nexus_ws_url"
-  }
+  "env": {}
+
 }
