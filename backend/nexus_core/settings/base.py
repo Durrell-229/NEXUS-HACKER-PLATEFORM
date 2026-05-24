@@ -90,20 +90,27 @@ TEMPLATES = [
 WSGI_APPLICATION = 'nexus_core.wsgi.application'
 ASGI_APPLICATION = 'nexus_core.asgi.application'
 
-# Database — PostgreSQL via environment variables
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env('DB_NAME', default='nexus_db'),
-        'USER': env('DB_USER', default='nexus_user'),
-        'PASSWORD': env('DB_PASSWORD', default='nexus_pass'),
-        'HOST': env('DB_HOST', default='localhost'),
-        'PORT': env('DB_PORT', default='5432'),
-        'OPTIONS': {
-            'connect_timeout': 10,
-        },
+# Database — supporte DATABASE_URL (Render/cloud) ou variables séparées (local)
+import os as _os
+if _os.environ.get('DATABASE_URL'):
+    DATABASES = {
+        'default': {
+            **env.db('DATABASE_URL'),
+            'OPTIONS': {'connect_timeout': 10},
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': env('DB_NAME', default='nexus_db'),
+            'USER': env('DB_USER', default='nexus_user'),
+            'PASSWORD': env('DB_PASSWORD', default='nexus_pass'),
+            'HOST': env('DB_HOST', default='localhost'),
+            'PORT': env('DB_PORT', default='5432'),
+            'OPTIONS': {'connect_timeout': 10},
+        }
+    }
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
