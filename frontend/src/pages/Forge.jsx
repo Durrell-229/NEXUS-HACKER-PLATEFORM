@@ -264,7 +264,13 @@ export default function Forge() {
   return (
     <div
       className="flex flex-col"
-      style={{ height: 'calc(100dvh - 60px)', background: '#02050c', overflow: 'hidden' }}
+      style={{
+        height: 'calc(100dvh - 60px)',
+        minHeight: '400px',
+        background: '#02050c',
+        overflow: 'hidden',
+        contain: 'strict',
+      }}
     >
       {/* ── Top bar ── */}
       <div

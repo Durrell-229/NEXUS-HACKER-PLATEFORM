@@ -98,19 +98,18 @@ export default function Sidebar() {
   const xpPercent = user ? Math.min(100, (user.xp % 1000) / 10) : 45
 
   return (
-    <motion.aside
-      animate={{ width: sidebarCollapsed ? 64 : 260 }}
-      transition={{ duration: 0.3, ease: 'easeInOut' }}
+    <aside
       className={clsx(
-        'fixed left-0 top-0 bottom-0 z-40 flex flex-col overflow-hidden transition-transform duration-300',
-        // Mobile: hidden by default, shown when mobileMenuOpen
+        'fixed left-0 top-0 bottom-0 z-40 flex flex-col overflow-hidden',
+        'transition-transform duration-300',
         mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
       )}
       style={{
+        width: sidebarCollapsed ? '64px' : '260px',
+        transition: 'width 0.3s ease, transform 0.3s ease',
         background: 'rgba(13, 17, 23, 0.97)',
         borderRight: '1px solid rgba(255,255,255,0.04)',
         boxShadow: '4px 0 20px rgba(0,0,0,0.5)',
-        backdropFilter: 'blur(20px)',
       }}
     >
       {/* Logo area */}
@@ -354,6 +353,6 @@ export default function Sidebar() {
           </div>
         </div>
       )}
-    </motion.aside>
+    </aside>
   )
 }

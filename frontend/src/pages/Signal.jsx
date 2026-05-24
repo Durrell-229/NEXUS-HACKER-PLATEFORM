@@ -528,14 +528,14 @@ export default function Signal() {
 
   if (view.type === 'dm') {
     return (
-      <div className="h-[calc(100vh-60px)]">
+      <div className="h-[calc(100dvh-60px)]">
         <DMChat persona={view.id} onBack={() => setView({ type: null, id: null })} />
       </div>
     )
   }
   if (view.type === 'channel') {
     return (
-      <div className="h-[calc(100vh-60px)]">
+      <div className="h-[calc(100dvh-60px)]">
         <ChannelChat channelId={view.id} onBack={() => setView({ type: null, id: null })} />
       </div>
     )

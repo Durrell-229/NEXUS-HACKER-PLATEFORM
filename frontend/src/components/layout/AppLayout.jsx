@@ -39,18 +39,12 @@ function ToastContainer() {
 // Mobile overlay backdrop
 function MobileBackdrop() {
   const { mobileMenuOpen, closeMobileMenu } = useNexusStore()
+  if (!mobileMenuOpen) return null
   return (
-    <AnimatePresence>
-      {mobileMenuOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={closeMobileMenu}
-          className="fixed inset-0 z-30 bg-black/70 backdrop-blur-sm lg:hidden"
-        />
-      )}
-    </AnimatePresence>
+    <div
+      onClick={closeMobileMenu}
+      className="fixed inset-0 z-30 bg-black/70 lg:hidden"
+    />
   )
 }
 
@@ -99,17 +93,7 @@ export default function AppLayout() {
         {/* Desktop margin via CSS class */}
         <div className="lg-sidebar-margin" style={{ '--desktop-margin': sidebarCollapsed ? '64px' : '260px' }}>
           <Suspense fallback={<PageLoader />}>
-            <AnimatePresence>
-              <motion.div
-                key={location.pathname}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.15 }}
-              >
-                <Outlet />
-              </motion.div>
-            </AnimatePresence>
+            <Outlet />
           </Suspense>
         </div>
       </main>
