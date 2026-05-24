@@ -35,17 +35,29 @@
 
 /* ========== BASE ========== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
 body {
   background-color: var(--htb-dark);
   color: var(--htb-text);
   font-family: 'JetBrains Mono', 'Fira Code', monospace;
   overflow-x: hidden;
   min-height: 100vh;
+  min-height: 100dvh;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: none;
 }
-#root { min-height: 100vh; }
+#root { min-height: 100vh; min-height: 100dvh; }
 ::selection { background: rgba(159, 239, 0, 0.2); color: var(--htb-green); }
 :focus-visible { outline: 1px solid var(--htb-green); outline-offset: 2px; }
+
+/* ── Tap highlight suppression on Android ── */
+* { -webkit-tap-highlight-color: transparent; }
+a, button, [role='button'] { touch-action: manipulation; }
 
 /* ========== SCROLLBAR ========== */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
@@ -56,12 +68,14 @@ body {
 }
 * { scrollbar-width: thin; scrollbar-color: var(--htb-green) var(--htb-darker); }
 
-/* ========== CUSTOM CURSOR ========== */
-body {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18'%3E%3Ccircle cx='9' cy='9' r='2.5' fill='%239fef00' opacity='0.9'/%3E%3Ccircle cx='9' cy='9' r='6' fill='none' stroke='%239fef00' stroke-width='0.5' opacity='0.4'/%3E%3C/svg%3E") 9 9, crosshair;
-}
-a, button, [role='button'] {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18'%3E%3Ccircle cx='9' cy='9' r='3.5' fill='%239fef00' opacity='1'/%3E%3Ccircle cx='9' cy='9' r='7' fill='none' stroke='%239fef00' stroke-width='1' opacity='0.6'/%3E%3C/svg%3E") 9 9, pointer;
+/* ========== CUSTOM CURSOR (desktop only) ========== */
+@media (hover: hover) and (pointer: fine) {
+  body {
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18'%3E%3Ccircle cx='9' cy='9' r='2.5' fill='%239fef00' opacity='0.9'/%3E%3Ccircle cx='9' cy='9' r='6' fill='none' stroke='%239fef00' stroke-width='0.5' opacity='0.4'/%3E%3C/svg%3E") 9 9, crosshair;
+  }
+  a, button, [role='button'] {
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18'%3E%3Ccircle cx='9' cy='9' r='3.5' fill='%239fef00' opacity='1'/%3E%3Ccircle cx='9' cy='9' r='7' fill='none' stroke='%239fef00' stroke-width='1' opacity='0.6'/%3E%3C/svg%3E") 9 9, pointer;
+  }
 }
 
 /* ========== COMPONENTS ========== */
@@ -281,3 +295,59 @@ a, button, [role='button'] {
 /* ========== PAGE TRANSITIONS ========== */
 .page-enter { opacity: 0; transform: translateY(8px); }
 .page-enter-active { opacity: 1; transform: translateY(0); transition: opacity 0.3s ease, transform 0.3s ease; }
+
+/* ========== MOBILE / ANDROID FIXES ========== */
+@media (max-width: 1023px) {
+  /* Disable heavy backdrop-filter on mobile (GPU cost) */
+  .glass-card {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(26, 35, 50, 0.97);
+  }
+
+  /* Minimum touch target 44px */
+  button, a, [role='button'], input[type='submit'] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Fix text too small on Android */
+  .text-\[9px\]  { font-size: 10px !important; }
+  .text-\[10px\] { font-size: 11px !important; }
+  .text-\[11px\] { font-size: 12px !important; }
+
+  /* Prevent horizontal overflow */
+  .page-content, main {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+
+  /* Scanline less distracting on small screens */
+  .scanline-overlay { opacity: 0.5; }
+}
+
+@media (max-width: 640px) {
+  /* Tighter padding on small phones */
+  .glass-card { padding: 12px !important; }
+
+  /* Full width cards */
+  .htb-card { border-radius: 6px; }
+
+  /* Font size floor */
+  .text-xs { font-size: 12px; }
+  .font-mono { letter-spacing: 0; }
+
+  /* Stack grids */
+  .grid-cols-2, .grid-cols-3, .grid-cols-4 {
+    grid-template-columns: 1fr !important;
+  }
+  .md\:grid-cols-2, .md\:grid-cols-3 {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Safe area for notch/punch-hole cameras */
+@supports (padding: env(safe-area-inset-top)) {
+  header { padding-top: env(safe-area-inset-top); }
+  .fixed.bottom-4 { bottom: calc(1rem + env(safe-area-inset-bottom)); }
+}

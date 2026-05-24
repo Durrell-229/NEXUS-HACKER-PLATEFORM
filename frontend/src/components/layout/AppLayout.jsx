@@ -67,7 +67,7 @@ export default function AppLayout() {
   useEffect(() => { closeMobileMenu() }, [location.pathname, closeMobileMenu])
 
   return (
-    <div className="min-h-screen" style={{ background: '#0d1117' }}>
+    <div className="min-h-screen" style={{ background: '#0d1117', minHeight: '100dvh' }}>
       {/* Scanline */}
       <div className="scanline-overlay" />
 
