@@ -1,6 +1,9 @@
 #!/bin/sh
 set -e
 
+echo "==> Creating required directories..."
+mkdir -p /app/logs
+
 echo "==> Running database migrations..."
 python manage.py migrate --noinput
 

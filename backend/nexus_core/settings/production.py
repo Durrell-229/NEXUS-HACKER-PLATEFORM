@@ -44,17 +44,25 @@ EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')  # noqa: F405
 #     send_default_pii=False,
 # )
 
-# Production logging to file
-LOGGING['handlers']['file'] = {  # noqa: F405
-    'class': 'logging.handlers.RotatingFileHandler',
-    'filename': BASE_DIR / 'logs' / 'nexus.log',  # noqa: F405
-    'maxBytes': 10 * 1024 * 1024,  # 10 MB
-    'backupCount': 5,
-    'formatter': 'verbose',
-}
-LOGGING['root']['handlers'] = ['console', 'file']  # noqa: F405
-LOGGING['loggers']['django']['handlers'] = ['console', 'file']  # noqa: F405
-LOGGING['loggers']['apps']['handlers'] = ['console', 'file']  # noqa: F405
+# Production logging — console only (Render/cloud captures stdout)
+# File handler only if /app/logs directory exists (local/VPS deployments)
+import os as _os
+_log_dir = BASE_DIR / 'logs'  # noqa: F405
+if _log_dir.exists():
+    LOGGING['handlers']['file'] = {  # noqa: F405
+        'class': 'logging.handlers.RotatingFileHandler',
+        'filename': _log_dir / 'nexus.log',
+        'maxBytes': 10 * 1024 * 1024,
+        'backupCount': 5,
+        'formatter': 'verbose',
+    }
+    _handlers = ['console', 'file']
+else:
+    _handlers = ['console']
+
+LOGGING['root']['handlers'] = _handlers  # noqa: F405
+LOGGING['loggers']['django']['handlers'] = _handlers  # noqa: F405
+LOGGING['loggers']['apps']['handlers'] = _handlers  # noqa: F405
 LOGGING['loggers']['apps']['level'] = 'INFO'  # noqa: F405
 
 # Cache with Redis
