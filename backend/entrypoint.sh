@@ -26,7 +26,7 @@ else:
 "
 
 echo "==> Starting Gunicorn on port ${PORT:-8000}..."
-exec gunicorn nexus_core.wsgi:application \
+exec gunicorn nexus_core.asgi:application \
   --bind "0.0.0.0:${PORT:-8000}" \
   --workers 4 \
   --worker-class uvicorn.workers.UvicornWorker \
