@@ -5,10 +5,13 @@ DEBUG = False
 # Security hardening
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
-SECURE_HSTS_SECONDS = 31536000        # 1 year
+SECURE_HSTS_SECONDS = 31536000
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
-SECURE_SSL_REDIRECT = True
+# Render terminates SSL at the proxy — disable redirect to avoid infinite loop
+SECURE_SSL_REDIRECT = False
+# Tell Django the original request was HTTPS (via Render's proxy header)
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 X_FRAME_OPTIONS = 'DENY'

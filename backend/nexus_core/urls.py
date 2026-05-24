@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.http import JsonResponse
 from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularSwaggerView,
@@ -10,7 +11,13 @@ from drf_spectacular.views import (
 
 API_V1 = 'api/v1/'
 
+def health_check(request):
+    return JsonResponse({'status': 'ok', 'service': 'nexus-backend'})
+
 urlpatterns = [
+    # Health check (Render)
+    path('api/health/', health_check),
+
     # Django admin
     path('admin/', admin.site.urls),
 
