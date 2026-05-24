@@ -1,7 +1,10 @@
 import axios from 'axios'
 
+const rawBase = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+const BASE_URL = rawBase.endsWith('/api/v1') ? rawBase : `${rawBase.replace(/\/$/, '')}/api/v1`
+
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1',
+  baseURL: BASE_URL,
   timeout: 15000,
   headers: {
     'Content-Type': 'application/json',
@@ -43,7 +46,7 @@ apiClient.interceptors.response.use(
           const { state } = JSON.parse(stored)
           if (state?.refreshToken) {
             const refreshRes = await axios.post(
-              `${import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1'}/auth/token/refresh/`,
+              `${BASE_URL}/auth/token/refresh/`,
               { refresh: state.refreshToken }
             )
             const newToken = refreshRes.data.access
