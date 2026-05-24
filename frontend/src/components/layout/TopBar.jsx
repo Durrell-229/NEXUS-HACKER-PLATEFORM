@@ -33,6 +33,7 @@ function NotificationItem({ notif, onRead }) {
 export default function TopBar() {
   const navigate = useNavigate()
   const { user, logout } = useAuthStore()
+  const isAdmin = user?.is_staff || user?.is_superuser
   const { notifications, markNotificationRead, markAllNotificationsRead, toggleMobileMenu, mobileMenuOpen } = useNexusStore()
   const [searchValue, setSearchValue] = useState('')
   const [searchFocused, setSearchFocused] = useState(false)
@@ -200,7 +201,7 @@ export default function TopBar() {
                   {[
                     { label: 'VIEW PROFILE', action: () => navigate(`/vault/${user?.username}`) },
                     { label: 'SETTINGS', action: () => navigate('/forge') },
-                    { label: 'ADMIN', action: () => navigate('/admin') },
+                    ...(isAdmin ? [{ label: 'ADMIN', action: () => navigate('/admin') }] : []),
                   ].map((item) => (
                     <button key={item.label} onClick={() => { item.action(); setUserMenuOpen(false) }}
                       className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-mono transition-colors text-left hover:bg-white/3"

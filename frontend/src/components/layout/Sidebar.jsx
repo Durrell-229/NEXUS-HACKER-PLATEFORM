@@ -93,6 +93,7 @@ function NavItem({ item, collapsed }) {
 export default function Sidebar() {
   const { sidebarCollapsed, toggleSidebar, mobileMenuOpen } = useNexusStore()
   const { user } = useAuthStore()
+  const isAdmin = user?.is_staff || user?.is_superuser
 
   const xpPercent = user ? Math.min(100, (user.xp % 1000) / 10) : 45
 
@@ -224,8 +225,8 @@ export default function Sidebar() {
         {/* Separator */}
         <div className="border-t border-htb-border/30 my-2" />
 
-        {/* Admin link */}
-        <NavLink to="/admin">
+        {/* Admin link — staff/superuser only */}
+        {isAdmin && <NavLink to="/admin">
           {({ isActive }) => (
             <motion.div
               whileHover={{ x: sidebarCollapsed ? 0 : 3 }}
@@ -250,7 +251,7 @@ export default function Sidebar() {
               </AnimatePresence>
             </motion.div>
           )}
-        </NavLink>
+        </NavLink>}
 
         {/* Vault link */}
         {user && (

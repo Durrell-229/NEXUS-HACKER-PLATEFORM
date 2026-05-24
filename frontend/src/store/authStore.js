@@ -16,11 +16,11 @@ export const useAuthStore = create(
         set({ isLoading: true, error: null })
         try {
           const res = await apiClient.post('/auth/token/', { email, password })
-          const { access, refresh, user } = res.data
+          const { access, refresh, username, is_staff, is_superuser, rank, level } = res.data
           set({
             token: access,
             refreshToken: refresh,
-            user,
+            user: { username, email, is_staff, is_superuser, rank, level },
             isAuthenticated: true,
             isLoading: false,
             error: null,

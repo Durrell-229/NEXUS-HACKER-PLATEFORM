@@ -58,7 +58,9 @@ export const useAIStore = create((set, get) => ({
       const token = useAuthStore.getState().token
       if (!token) throw new Error('Non authentifié — reconnecte-toi')
 
-      const response = await fetch('/api/v1/matrix/ai/chat/', {
+      const rawBase = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+      const apiBase = rawBase.endsWith('/api/v1') ? rawBase : `${rawBase.replace(/\/$/, '')}/api/v1`
+      const response = await fetch(`${apiBase}/matrix/ai/chat/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

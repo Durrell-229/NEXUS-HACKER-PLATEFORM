@@ -25,6 +25,13 @@ function ProtectedRoute({ children }) {
   return children
 }
 
+function AdminRoute({ children }) {
+  const { isAuthenticated, user } = useAuthStore()
+  if (!isAuthenticated) return <Navigate to="/login" replace />
+  if (!user?.is_staff && !user?.is_superuser) return <Navigate to="/dashboard" replace />
+  return children
+}
+
 function PublicRoute({ children }) {
   const { isAuthenticated } = useAuthStore()
   if (isAuthenticated) return <Navigate to="/dashboard" replace />
@@ -50,7 +57,7 @@ export default function App() {
           <Route path="/vault/:username" element={<Vault />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/teams" element={<Teams />} />
-          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />
