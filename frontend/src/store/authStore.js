@@ -27,7 +27,9 @@ export const useAuthStore = create(
           })
           return { success: true }
         } catch (err) {
-          const error = err.response?.data?.detail || 'Authentication failed'
+          const error = !err.response
+            ? 'Cannot reach server — check your connection'
+            : err.response.data?.detail || `Server error ${err.response.status}`
           set({ isLoading: false, error })
           return { success: false, error }
         }
@@ -63,8 +65,13 @@ export const useAuthStore = create(
           })
           return { success: true }
         } catch (err) {
-          const errors = err.response?.data || {}
-          const errorMsg = Object.values(errors).flat().join(' ') || 'Registration failed'
+          let errorMsg
+          if (!err.response) {
+            errorMsg = 'Cannot reach server — check your connection or CORS settings'
+          } else {
+            const errors = err.response.data || {}
+            errorMsg = Object.values(errors).flat().join(' ') || `Server error ${err.response.status}`
+          }
           set({ isLoading: false, error: errorMsg })
           return { success: false, error: errorMsg }
         }
