@@ -1,0 +1,114 @@
+version: "3.9"
+
+# Production overrides — use with:
+#   docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+networks:
+  nexus-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+    driver: local
+  redis-data:
+    driver: local
+
+services:
+
+  # ─── PostgreSQL 16 ──────────────────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+          cpus: "1.0"
+        reservations:
+          memory: 256m
+
+  # ─── Redis 7 Alpine ─────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 256m
+          cpus: "0.5"
+        reservations:
+          memory: 128m
+
+  # ─── Django Backend (image depuis registry) ──────────────────────────────────
+  backend:
+    image: ${REGISTRY:-ghcr.io}/nexus/backend:${TAG:-latest}
+    build: !reset null
+    volumes: !reset []
+    command: gunicorn nexus_core.wsgi:application --bind 0.0.0.0:8000 --workers 4 --worker-class gthread --threads 2 --timeout 120 --access-logfile - --error-logfile -
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+          cpus: "2.0"
+        reservations:
+          memory: 512m
+      replicas: 2
+
+  # ─── Celery Worker ───────────────────────────────────────────────────────────
+  celery:
+    image: ${REGISTRY:-ghcr.io}/nexus/backend:${TAG:-latest}
+    build: !reset null
+    volumes: !reset []
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+          cpus: "1.0"
+        reservations:
+          memory: 256m
+
+  # ─── Celery Beat ─────────────────────────────────────────────────────────────
+  celery-beat:
+    image: ${REGISTRY:-ghcr.io}/nexus/backend:${TAG:-latest}
+    build: !reset null
+    volumes: !reset []
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 256m
+          cpus: "0.5"
+        reservations:
+          memory: 128m
+
+  # ─── Frontend (servi via Nginx intégré dans l'image prod) ────────────────────
+  frontend:
+    image: ${REGISTRY:-ghcr.io}/nexus/frontend:${TAG:-latest}
+    build: !reset null
+    volumes: !reset []
+    command: nginx -g "daemon off;"
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 128m
+          cpus: "0.5"
+        reservations:
+          memory: 64m
+
+  # ─── Nginx Reverse Proxy ─────────────────────────────────────────────────────
+  nginx:
+    volumes:
+      - ./infra/nginx/nginx.prod.conf:/etc/nginx/nginx.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - /var/www/certbot:/var/www/certbot:ro
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 128m
+          cpus: "0.5"
+        reservations:
+          memory: 64m
